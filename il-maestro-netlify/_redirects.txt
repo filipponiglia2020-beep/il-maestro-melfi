@@ -1,0 +1,10 @@
+# Redirect rules for Netlify
+# Homepage: App Clienti
+/ /index.html 200
+
+# Dashboard: Dashboard Ristorante
+/dashboard /dashboard.html 200
+/admin /dashboard.html 200
+
+# Fallback per SPA
+/* /index.html 200

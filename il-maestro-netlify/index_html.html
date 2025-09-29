@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <title>Il Maestro - Paninoteca Melfi</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json,{%22name%22:%22Il%20Maestro%20-%20Paninoteca%20Melfi%22,%22short_name%22:%22Il%20Maestro%22,%22description%22:%22Ordina%20online%20da%20Il%20Maestro%20-%20Paninoteca%20Melfi%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%23667eea%22,%22theme_color%22:%22%23667eea%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23667eea'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E🍔%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22},{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23667eea'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E🍔%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22}]}">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Il Maestro">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23667eea'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E🍔%3C/text%3E%3C/svg%3E">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #ff6b6b;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --dark: #2d3748;
+            --light: #f7fafc;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: 
+                linear-gradient(rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3)),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff6b6b' fill-opacity='0.2'%3E%3Cpath d='M30 30c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm15 15c0-5.523-4.477-10-10-10s-10 4.477-10 10 4.477 10 10 10 10-4.477 10-10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23feca57' fill-opacity='0.15'%3E%3Cpath d='M20 20.5V18H5v-2h15v-2.5L25.5 18 20 22.5V20.5zm-5 0V18h10v2H15v.5L9.5 18 15 15.5V18z' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 120px 120px, 80px 80px;
+            background-position: 0 0, 40px 40px;
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        /* PWA Install Prompt */
+        .install-prompt {
+            position: fixed;
+            bottom: 90px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1500;
+            animation: slideUp 0.3s;
+        }
+
+        .install-prompt.show {
+            display: block;
+        }
+
+        .install-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .install-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .install-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .install-btn.secondary {
+            background: #e0e0e0;
+            color: var(--dark);
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 12px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .logo h1 {
+            color: var(--primary);
+            font-size: 1.8em;
+        }
+
+        .info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .status-bar {
+            background: var(--success);
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Categories */
+        .categories {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 12px;
+            overflow-x: auto;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .categories-wrapper {
+            display: flex;
+            gap: 8px;
+            min-width: max-content;
+        }
+
+        .category-btn {
+            padding: 10px 16px;
+            background: var(--light);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        .category-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 15px auto;
+            padding: 0 12px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px auto;
+                padding: 0 8px;
+            }
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 8px;
+            }
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .product-card {
+                padding: 10px;
+                border-radius: 12px;
+            }
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+        }
+
+        .product-name {
+            font-weight: bold;
+            font-size: 1em;
+            margin-bottom: 6px;
+        }
+
+        .product-description {
+            color: #666;
+            font-size: 0.8em;
+            margin-bottom: 12px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .product-name {
+                font-size: 0.9em;
+                margin-bottom: 4px;
+            }
+            
+            .product-description {
+                font-size: 0.75em;
+                margin-bottom: 8px;
+                -webkit-line-clamp: 1;
+            }
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-price {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .add-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .product-price {
+                font-size: 1.1em;
+            }
+            
+            .add-btn {
+                padding: 6px 12px;
+                font-size: 0.8em;
+                border-radius: 15px;
+            }
+        }
+
+        .add-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        /* Cart FAB */
+        .cart-fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--warning);
+            min-width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+        }
+
+        /* Cart Items */
+        .cart-item {
+            padding: 15px;
+            background: #f8f9fa;
+            margin: 10px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qty-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1em;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 3000;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        .category-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--dark);
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.8);
+        }
+
+        @media (max-width: 768px) {
+            .category-title {
+                font-size: 1.2em;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Offline indicator */
+        .offline-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #f44336;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            transform: translateY(-100%);
+            transition: transform 0.3s;
+            z-index: 200;
+        }
+
+        .offline-indicator.show {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Offline Indicator -->
+    <div class="offline-indicator" id="offlineIndicator">
+        🔵 Modalità offline - Gli ordini saranno sincronizzati quando tornerà la connessione
+    </div>
+
+    <!-- PWA Install Prompt -->
+    <div class="install-prompt" id="installPrompt">
+        <strong>📱 Installa l'app Il Maestro</strong>
+        <p>Aggiungi alla home screen per un accesso veloce!</p>
+        <div class="install-buttons">
+            <button class="install-btn primary" id="installBtn">Installa</button>
+            <button class="install-btn secondary" id="dismissBtn">Più tardi</button>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar" id="statusBar">
+        🔌 Connessione in corso...
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            <span style="font-size: 2em;">🍔</span>
+            <h1>Il Maestro</h1>
+        </div>
+        <div class="info">
+            <span>📍 Melfi (PZ)</span>
+            <span>📞 389 648 7569</span>
+            <span>🚚 Consegna €1 (min €15)</span>
+            <span>🕕 Aperto ora</span>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="categories">
+        <div class="categories-wrapper">
+            <button class="category-btn active" onclick="showCategory('panini')">🥖 Panini</button>
+            <button class="category-btn" onclick="showCategory('panini_speciali')">⭐ Speciali</button>
+            <button class="category-btn" onclick="showCategory('cuzzetiello')">🥪 Cuzzetiello</button>
+            <button class="category-btn" onclick="showCategory('piadine')">🌯 Piadine</button>
+            <button class="category-btn" onclick="showCategory('piatti_unici')">🍽️ Piatti</button>
+            <button class="category-btn" onclick="showCategory('insalatone')">🥗 Insalatone</button>
+            <button class="category-btn" onclick="showCategory('fritture')">🍟 Fritture</button>
+            <button class="category-btn" onclick="showCategory('rustichelle')">🥧 Rustici</button>
+            <button class="category-btn" onclick="showCategory('aperitivi')">🤗 Aperitivi</button>
+            <button class="category-btn" onclick="showCategory('dolci')">🍰 Dolci</button>
+            <button class="category-btn" onclick="showCategory('bevande')">🥤 Bevande</button>
+            <button class="category-btn" onclick="showCategory('birre')">🍺 Birre</button>
+            <button class="category-btn" onclick="showCategory('vini')">🍷 Vini</button>
+            <button class="category-btn" onclick="showCategory('cocktail')">🍸 Cocktail</button>
+            <button class="category-btn" onclick="showCategory('digestivi')">🥃 Digestivi</button>
+        </div>
+    </div>
+
+    <!-- Container -->
+    <div class="container">
+        <div class="category-title" id="categoryTitle">Panini</div>
+        <div class="products-grid" id="productsGrid">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Cart FAB -->
+    <div class="cart-fab" onclick="showCart()">
+        <span style="font-size: 1.5em;">🛒</span>
+        <span class="cart-count" id="cartCount">0</span>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Il tuo carrello</h3>
+                <button class="close-btn" onclick="hideCart()">✖</button>
+            </div>
+            <div class="modal-body" id="cartBody"></div>
+        </div>
+    </div>
+
+    <!-- Order Modal -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Completa l'ordine</h3>
+                <button class="close-btn" onclick="hideOrderForm()">✖</button>
+            </div>
+            <div class="modal-body">
+                <form id="orderForm" onsubmit="submitOrder(event)">
+                    <div class="form-group">
+                        <label class="form-label">Nome e Cognome</label>
+                        <input type="text" class="form-input" id="customerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Telefono</label>
+                        <input type="tel" class="form-input" id="customerPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Indirizzo (Melfi)</label>
+                        <input type="text" class="form-input" id="customerAddress" required 
+                               placeholder="Via, numero, scala">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Note</label>
+                        <input type="text" class="form-input" id="customerNotes" 
+                               placeholder="Citofonare, no cipolla, etc.">
+                    </div>
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        Invia Ordine (Totale: €<span id="orderTotal">0</span>)
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCSTbBGCs2m6Z4k5euz0DMAvX8y_azcO1Q",
+            authDomain: "il-maestro-app.firebaseapp.com",
+            databaseURL: "https://il-maestro-app-default-rtdb.firebaseio.com",
+            projectId: "il-maestro-app",
+            storageBucket: "il-maestro-app.firebasestorage.app",
+            messagingSenderId: "309138548046",
+            appId: "1:309138548046:web:efec8ce37e882198c66a1f"
+        };
+
+        // Menu Data REALE - Corretto con i dati del Pub Il Maestro
+        const menuData = {
+            panini: [
+                { name: 'Semplice', description: 'Würstel, patatine', price: 5.00 },
+                { name: 'Classico', description: 'Hamburger, patatine', price: 6.00 },
+                { name: 'Golosone', description: 'Salsiccia, patatine', price: 6.00 },
+                { name: 'Eccellente', description: 'Cotoletta, patatine', price: 6.00 },
+                { name: 'Sfizioso', description: 'Crudo, melanzane grigliate, provola o mozzarella', price: 6.00 },
+                { name: 'Aggressivo', description: 'Porchetta, friarielli, provola o mozzarella', price: 8.00 },
+                { name: 'Atomico', description: 'Porchetta, provola, funghi', price: 8.00 },
+                { name: 'Delicato', description: 'Hamburger, mozzarella o provola, pomodoro, insalata', price: 7.50 },
+                { name: 'Paesano', description: 'Hamburger, gorgonzola, funghi e rucola', price: 8.00 },
+                { name: 'Leggero', description: 'Pollo, pomodoro, mozzarella, zucchine grigliate', price: 8.00 },
+                { name: 'Dinamico', description: 'Salsiccia, friarielli, provola', price: 8.00 },
+                { name: 'Vegetariano', description: 'Cotoletta o Hamburger di soia, provola, cipolla, insalata, pomodori', price: 8.00 },
+                { name: 'Appetitoso', description: 'Cotoletta, insalata, patatine, provola o mozzarella', price: 8.00 },
+                { name: 'Calorico', description: 'Salsiccia, mozzarella, bacon, melanzane sott\'olio', price: 8.00 },
+                { name: 'Scustumat', description: 'Crudo, salsiccia, mozzarella, funghi, piccante', price: 8.00 },
+                { name: 'Mangione', description: 'Porchetta, melanzane sott\'olio, patatine, insalata', price: 7.50 },
+                { name: 'Completo', description: 'Hamburger, patatine, prosciutto cotto, provola o mozzarella', price: 8.50 },
+                { name: 'Ignorante', description: 'Salsiccia, porchetta, caciocavallo, piccante', price: 9.00 },
+                { name: 'Proteico', description: 'Manzo affumicato, rucola, grana, pomodori, limone', price: 8.00 },
+                { name: 'Boscaiolo', description: 'Spianata, gorgonzola, rucola e funghi', price: 7.00 }
+            ],
+            panini_speciali: [
+                { name: 'Americano', description: 'Hamburger, uovo, cheddar, bacon + contorno di patatine', price: 10.00 },
+                { name: 'Pizza Burger', description: 'Hamburger, bacon, insalata, provola o mozzarella + contorno di patatine', price: 12.00 },
+                { name: 'Il Maestro', description: 'Salsiccia, patatine, porchetta, funghi, insalata, provola o mozzarella + contorno di patatine', price: 12.00 },
+                { name: 'Esagerato', description: 'Hamburger, bacon, stracciatella, pesto, granella di pistacchio + contorno di patatine', price: 12.00 },
+                { name: 'Sportivo', description: '2x Hamburger, insalata, cipolla caramellata, pomodori, provola o mozzarella + contorno di patatine', price: 12.00 },
+                { name: 'Vertiginoso', description: '2x Hamburger, doppio bacon, insalata, cheddar, pomodori + contorno di patatine', price: 13.00 },
+                { name: 'Gola Profonda', description: '3x Hamburger, cipolla, insalata, uovo, triplo cheddar + contorno di patatine', price: 15.00 },
+                { name: 'Norvegese', description: 'Salmone, rucola, zucchine, stracciatella, lime + contorno di patatine', price: 11.00 }
+            ],
+            cuzzetiello: [
+                { name: 'Cuzzetiello napoletano', description: 'Cuzzetiello salsiccia friarielli e provola affumicata', price: 10.00 }
+            ],
+            piadine: [
+                { name: 'Salamina', description: 'Salame, rucola, provola o mozzarella', price: 6.00 },
+                { name: 'Cruderone', description: 'Crudo, rucola, provola o mozzarella', price: 6.00 },
+                { name: 'Cottodoro', description: 'Cotto, insalata, pomodori, provola o mozzarella', price: 6.00 },
+                { name: 'Griglia Nera', description: 'Crudo, rucola, melanzane grigliate, provola o mozzarella', price: 6.00 },
+                { name: 'Unica', description: 'Manzo affumicato, rucola, mozzarella, limone', price: 7.00 }
+            ],
+            piatti_unici: [
+                { name: 'Uno', description: 'Hamburger, provola, bacon, insalata, patatine + bruschette', price: 12.00 },
+                { name: 'Due', description: 'Bistecca di Reale Black Angus 250/300g rucola, grana e pomodorini + bruschetta', price: 20.00 },
+                { name: 'Tre', description: 'Scaloppina di pollo al limone o vino bianco con contorno di insalata mista o patatine', price: 12.00 },
+                { name: 'Quattro', description: 'Cotoletta di pollo, insalata, pomodori, patatine + bruschetta', price: 12.00 },
+                { name: 'Cinque', description: 'Carpaccio di manzo (cotto a bassa temperatura) rucola, pomodori, grana, lime + bruschetta', price: 12.00 },
+                { name: 'Sei', description: 'Carpaccio di Salmone, rucola, grana, limone + bruschetta', price: 12.00 },
+                { name: 'Sette', description: 'Stinco di maiale 650g con contorno a scelta + bruschetta', price: 13.00 },
+                { name: 'Otto', description: 'Grigliata mista di carne con contorno a scelta tra insalata o patatine: (Hamburger, petto di pollo, Würstel Tedesco e porchetta)', price: 15.00 },
+                { name: 'Nove', description: 'BBQ Porck Ribs 600gr (costolette cotte a bassa temperatura, aromatizzate con salsa BBQ), patatine', price: 20.00 }
+            ],
+            insalatone: [
+                { name: 'Insalatona di Pollo', description: 'Pollo, insalata, zucchine e melanzane grigliate, provola, pomodori, mais', price: 10.00 },
+                { name: 'Insalatona di Salmone', description: 'Salmone, insalata, zucchine e melanzane grigliate, provola, pomodori, mais', price: 10.00 }
+            ],
+            fritture: [
+                { name: 'Crocchette di patate', description: '6 pz', price: 4.00 },
+                { name: 'Nutella chips', description: 'Patatine con nutella', price: 4.00 },
+                { name: 'Patatina piccola', description: 'Porzione piccola', price: 3.00 },
+                { name: 'Patatina grande', description: 'Porzione grande', price: 4.00 },
+                { name: 'Patatine, Würstel, Cheddar piccola', description: 'Piccola porzione', price: 4.50 },
+                { name: 'Patatine, Würstel, Cheddar grande', description: 'Grande porzione', price: 5.50 },
+                { name: 'Patatine, Bacon, Cheddar piccola', description: 'Piccola porzione', price: 4.50 },
+                { name: 'Patatine, Bacon, Cheddar grande', description: 'Grande porzione', price: 5.50 },
+                { name: 'Patatine, Salsiccia, Cheddar piccola', description: 'Piccola porzione', price: 4.50 },
+                { name: 'Patatine, Salsiccia, Cheddar grande', description: 'Grande porzione', price: 5.50 },
+                { name: 'Patatine porchetta e cheddar piccola', description: 'Piccola porzione', price: 4.50 },
+                { name: 'Patatine porchetta e cheddar grande', description: 'Grande porzione', price: 5.50 },
+                { name: 'Jalapenos', description: '4 pz', price: 5.00 },
+                { name: 'Mozzarelline', description: '8 pz', price: 4.00 },
+                { name: 'Fritto Misto', description: 'Patatine 2 pz Mozzarelline 1 pz Jalapenos 1 pz Aletta di pollo 2 pz Nuggets', price: 8.00 },
+                { name: 'Alette di pollo', description: '4/5 pz', price: 5.00 },
+                { name: 'Nuggets di pollo', description: '8 pz', price: 4.50 },
+                { name: 'Fiori di zucca pastellati', description: '4 pz', price: 6.00 }
+            ],
+            rustichelle: [
+                { name: 'Cotto', description: 'Cotto, insalata, pomodori, provola o mozzarella', price: 7.00 },
+                { name: 'Rustichella hot (cotto)', description: 'Cotto, provola e melanzane sott\'olio', price: 7.00 },
+                { name: 'Crudo', description: 'Crudo, insalata, pomodori, provola o mozzarella', price: 7.00 },
+                { name: 'Salame', description: 'Salame, insalata, pomodori, provola o mozzarella', price: 7.00 },
+                { name: 'Rustichella hot (salame)', description: 'Salame dolce, provola e funghi sott\'olio', price: 7.00 },
+                { name: 'Manzo', description: 'Manzo, rucola, pomodori, scaglie di grana, lime', price: 8.00 },
+                { name: 'Rustichella salmone', description: 'Salmone affumicato, rucola, pomodoro, grana e limone', price: 9.00 }
+            ],
+            aperitivi: [
+                { name: 'Aperitivo IL MAESTRO', description: 'Stuzzicheria mista bruschette e bevanda a scelta (prezzo p.p.)', price: 12.00 }
+            ],
+            dolci: [
+                { name: 'Tortino al Cioccolato', description: 'Tortino caldo al cioccolato', price: 4.00 },
+                { name: 'Tortino Biciock', description: 'Tortino al cioccolato bianco e fondente', price: 4.00 },
+                { name: 'Tortino al Pistacchio', description: 'Tortino caldo al pistacchio', price: 4.00 },
+                { name: 'Semifreddo al cioccolato', description: 'Semifreddo cremoso al cioccolato', price: 4.00 },
+                { name: 'Semifreddo al pistacchio', description: 'Semifreddo cremoso al pistacchio', price: 4.00 }
+            ],
+            bevande: [
+                { name: 'Acqua 0,5L', description: 'Naturale o frizzante', price: 1.00 },
+                { name: 'Coca-Cola 0,33L', description: 'Lattina', price: 2.50 },
+                { name: 'Coca-Cola Zero 0,33L', description: 'Lattina', price: 2.50 },
+                { name: 'Coca-Cola 1L', description: 'Bottiglia', price: 4.50 },
+                { name: 'Fanta 0,33L', description: 'Lattina', price: 2.50 },
+                { name: 'EstaThè 0,33L', description: 'Limone / Pesca', price: 2.50 },
+                { name: 'Cedrata', description: 'Tassoni', price: 2.50 },
+                { name: 'Cocktail San Pellegrino', description: 'Vari gusti', price: 2.50 },
+                { name: 'Crodino', description: 'Aperitivo analcolico', price: 2.00 },
+                { name: 'Campari Soda', description: 'Aperitivo', price: 2.50 }
+            ],
+            birre: [
+                { name: 'Heineken 0,33L', description: 'Birra tedesca premium', price: 3.00 },
+                { name: 'Nastro Azzurro 0,33L', description: 'Birra italiana classica', price: 2.50 },
+                { name: 'Ichnusa Non Filtrata 0,33L', description: 'Birra sarda artigianale', price: 3.50 },
+                { name: 'Corona Extra 0,35L', description: 'Birra messicana con lime', price: 3.50 },
+                { name: 'Raffo grezza 0,33', description: 'Birra pugliese non filtrata', price: 3.50 },
+                { name: 'Bjorne vol. 8,3% 0,33L', description: 'Birra forte norvegese', price: 3.50 },
+                { name: 'Lowenbrau', description: 'Birra bionda tedesca gradi 5,2', price: 3.50 },
+                { name: 'Leffe Bionda vol. 6% 0,33L', description: 'Birra belga premium', price: 4.00 },
+                { name: 'Leffe Rossa vol. 6,6% 0,33L', description: 'Birra belga ambrata', price: 4.00 },
+                { name: 'Leffe rituel', description: 'Birra bionda 9°', price: 4.00 },
+                { name: 'Birra al Limone', description: 'Birra aromatizzata al limone', price: 2.50 }
+            ],
+            vini: [
+                { name: 'Calice Prosecco', description: 'Prosecco al calice', price: 3.00 },
+                { name: 'Calice Vino Bianco', description: 'Vino bianco al calice', price: 3.00 },
+                { name: 'Calice Vino Rosso', description: 'Vino rosso al calice', price: 3.00 },
+                { name: 'Calice Gewurztraminer Santa Margherita', description: 'Bianco pregiato al calice', price: 4.00 },
+                { name: 'Prosecco Extra Dry Millesimato Bacio della Luna', description: 'Bottiglia 0,75L', price: 18.00 },
+                { name: 'Baliaggio bianco Cantine di Venosa 0,75L', description: 'Bianco locale - Bottiglia', price: 13.00 },
+                { name: 'Baliaggio Aglianico del Vulture Cantine di Venosa 0,75L', description: 'Rosso DOC locale - Bottiglia', price: 15.00 },
+                { name: 'Gewurztraminer Santa Margherita 0,75L', description: 'Bianco pregiato - Bottiglia', price: 20.00 }
+            ],
+            cocktail: [
+                { name: 'Aperol Spritz', description: 'Aperol, prosecco, soda', price: 5.00 },
+                { name: 'Campari e Prosecco', description: 'Campari con prosecco', price: 5.00 },
+                { name: 'Gin Tonic Tanqueray', description: 'Gin Tanqueray con tonica', price: 6.00 },
+                { name: 'Gin Tonic Bombay', description: 'Gin Bombay con tonica', price: 6.00 },
+                { name: 'Gin Tonic Gin Mare', description: 'Gin Mare premium con tonica', price: 9.00 },
+                { name: 'Gin Tonic Nordés', description: 'Gin Nordés premium con tonica', price: 9.00 },
+                { name: 'Vodka Tonic', description: 'Vodka con tonica', price: 6.00 }
+            ],
+            digestivi: [
+                { name: 'Amaro Lucano', description: 'Amaro tipico lucano', price: 2.50 },
+                { name: 'Amaro del Capo', description: 'Amaro calabrese alle erbe', price: 2.50 },
+                { name: 'Montenegro', description: 'Amaro storico italiano', price: 2.50 },
+                { name: 'Jagermeister', description: 'Amaro tedesco alle erbe', price: 2.50 },
+                { name: 'Limoncello', description: 'Liquore al limone', price: 2.50 },
+                { name: 'Grappa Barricata', description: 'Grappa invecchiata in botte', price: 3.00 },
+                { name: 'Rum The Damon\'s Share', description: 'La riserva del Diavolo - Rum premium', price: 4.00 }
+            ]
+        };
+
+        const categoryTitles = {
+            panini: 'Panini',
+            panini_speciali: 'Panini Speciali',
+            cuzzetiello: 'Cuzzetiello',
+            piadine: 'Piadine',
+            piatti_unici: 'Piatti Unici',
+            insalatone: 'Insalatone',
+            fritture: 'Fritture',
+            rustichelle: 'Rustichelle',
+            aperitivi: 'Aperitivi',
+            dolci: 'Dolci',
+            bevande: 'Bevande',
+            birre: 'Birre',
+            vini: 'Vini',
+            cocktail: 'Cocktail',
+            digestivi: 'Digestivi'
+        };
+
+        let cart = [];
+        let currentCategory = 'panini';
+        let database = null;
+        let firebaseConnected = false;
+        let deferredPrompt;
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', function() {
+            initFirebase();
+            renderProducts();
+            updateCartUI();
+            initPWA();
+            checkOnlineStatus();
+        });
+
+        // PWA Installation
+        function initPWA() {
+            // Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('data:text/javascript,const%20CACHE_NAME%3D%22il-maestro-v1%22%3Bself.addEventListener%28%22install%22%2Ce%3D%3Eself.skipWaiting%28%29%29%3Bself.addEventListener%28%22activate%22%2Ce%3D%3Ee.waitUntil%28clients.claim%28%29%29%29%3Bself.addEventListener%28%22fetch%22%2Ce%3D%3E%7Be.respondWith%28caches.match%28e.request%29.then%28t%3D%3Et%7C%7Cfetch%28e.request%29.catch%28%29%3D%3Ecaches.match%28%22/%22%29%29%29%3B%7D%29%3B')
+                .catch(err => console.log('SW registration failed'));
+            }
+
+            // Install prompt
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                
+                // Show custom install prompt after 5 seconds
+                setTimeout(() => {
+                    if (!localStorage.getItem('installDismissed')) {
+                        document.getElementById('installPrompt').classList.add('show');
+                    }
+                }, 5000);
+            });
+
+            // Install button
+            document.getElementById('installBtn').addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        console.log('App installed');
+                    }
+                    deferredPrompt = null;
+                    document.getElementById('installPrompt').classList.remove('show');
+                }
+            });
+
+            // Dismiss button
+            document.getElementById('dismissBtn').addEventListener('click', () => {
+                document.getElementById('installPrompt').classList.remove('show');
+                localStorage.setItem('installDismissed', 'true');
+            });
+        }
+
+        function checkOnlineStatus() {
+            function updateOnlineStatus() {
+                const indicator = document.getElementById('offlineIndicator');
+                if (navigator.onLine) {
+                    indicator.classList.remove('show');
+                    syncOfflineOrders();
+                } else {
+                    indicator.classList.add('show');
+                }
+            }
+
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            updateOnlineStatus();
+        }
+
+        function syncOfflineOrders() {
+            const offlineOrders = JSON.parse(localStorage.getItem('offline_orders') || '[]');
+            if (offlineOrders.length > 0 && firebaseConnected && database) {
+                offlineOrders.forEach(order => {
+                    database.ref('orders').push(order);
+                });
+                localStorage.removeItem('offline_orders');
+                showNotification(`${offlineOrders.length} ordini sincronizzati!`);
+            }
+        }
+
+        function initFirebase() {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                database = firebase.database();
+                
+                database.ref('.info/connected').on('value', function(snapshot) {
+                    firebaseConnected = snapshot.val() === true;
+                    updateStatus(firebaseConnected);
+                    if (firebaseConnected) {
+                        syncOfflineOrders();
+                    }
+                });
+            } catch (error) {
+                console.error('Firebase error:', error);
+                updateStatus(false);
+            }
+        }
+
+        function updateStatus(connected) {
+            const statusBar = document.getElementById('statusBar');
+            statusBar.textContent = connected ? 
+                '✅ Online - Ordini in tempo reale' : 
+                '⚠️ Offline - Ordini salvati localmente';
+            statusBar.style.background = connected ? '#4caf50' : '#ff9800';
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            const title = document.getElementById('categoryTitle');
+            const products = menuData[currentCategory] || [];
+            
+            title.textContent = categoryTitles[currentCategory] || 'Prodotti';
+            
+            grid.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-description">${product.description}</div>
+                    <div class="product-footer">
+                        <span class="product-price">€${product.price.toFixed(2)}</span>
+                        <button class="add-btn" onclick="addToCart('${product.name}', ${product.price})">
+                            + Aggiungi
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderProducts();
+        }
+
+        function addToCart(name, price) {
+            const item = cart.find(i => i.name === name);
+            if (item) {
+                item.quantity++;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            updateCartUI();
+            showNotification(name + ' aggiunto!');
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
+        }
+
+        function removeFromCart(name) {
+            const itemIndex = cart.findIndex(i => i.name === name);
+            if (itemIndex > -1) {
+                cart.splice(itemIndex, 1);
+                updateCartUI();
+                showCart(); // Refresh cart view
+            }
+        }
+
+        function updateQuantity(name, change) {
+            const item = cart.find(i => i.name === name);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    removeFromCart(name);
+                } else {
+                    updateCartUI();
+                    showCart(); // Refresh cart view
+                }
+            }
+        }
+
+        function showCart() {
+            const modal = document.getElementById('cartModal');
+            const body = document.getElementById('cartBody');
+            
+            if (cart.length === 0) {
+                body.innerHTML = '<p style="text-align:center; color:#999; padding:40px;">Carrello vuoto</p>';
+            } else {
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const deliveryFee = total >= 15 ? 1 : 1;
+                const finalTotal = total + deliveryFee;
+                
+                body.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <strong>${item.name}</strong><br>
+                            €${item.price.toFixed(2)} x ${item.quantity} = €${(item.price * item.quantity).toFixed(2)}
+                        </div>
+                        <div class="cart-item-controls">
+                            <button class="qty-btn" onclick="updateQuantity('${item.name}', -1)">-</button>
+                            <span style="min-width: 30px; text-align: center;">${item.quantity}</span>
+                            <button class="qty-btn" onclick="updateQuantity('${item.name}', 1)">+</button>
+                        </div>
+                    </div>
+                `).join('') + `
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Subtotale:</span>
+                            <span>€${total.toFixed(2)}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Consegna:</span>
+                            <span>€${deliveryFee.toFixed(2)}</span>
+                        </div>
+                        ${total < 15 ? '<div style="color: #ff9800; font-size: 0.9em; margin-bottom: 10px;">⚠️ Ordine minimo €15</div>' : ''}
+                        <div style="display: flex; justify-content: space-between; font-size: 1.2em; font-weight: bold;">
+                            <span>TOTALE:</span>
+                            <span style="color: #667eea;">€${finalTotal.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    ${total >= 15 ? `
+                        <button class="submit-btn" style="margin-top: 20px;" onclick="showOrderForm()">
+                            🛒 Procedi all'ordine
+                        </button>
+                    ` : ''}
+                `;
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function hideCart() {
+            document.getElementById('cartModal').classList.remove('active');
+        }
+
+        function showOrderForm() {
+            if (cart.length === 0) return;
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 1;
+            document.getElementById('orderTotal').textContent = total.toFixed(2);
+            
+            hideCart();
+            document.getElementById('orderModal').classList.add('active');
+        }
+
+        function hideOrderForm() {
+            document.getElementById('orderModal').classList.remove('active');
+        }
+
+        function submitOrder(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Invio in corso...';
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 1;
+            
+            const order = {
+                id: 'ORD-' + Date.now(),
+                customer: {
+                    name: document.getElementById('customerName').value,
+                    phone: document.getElementById('customerPhone').value,
+                    address: document.getElementById('customerAddress').value + ' - MELFI',
+                    notes: document.getElementById('customerNotes').value
+                },
+                items: cart,
+                total: total,
+                timestamp: Date.now(),
+                status: 'nuovo'
+            };
+            
+            if (firebaseConnected && database && navigator.onLine) {
+                database.ref('orders').push(order)
+                    .then(() => completeOrder(order))
+                    .catch(() => saveLocally(order));
+            } else {
+                saveLocally(order);
+            }
+        }
+
+        function saveLocally(order) {
+            const orders = JSON.parse(localStorage.getItem('offline_orders') || '[]');
+            orders.push(order);
+            localStorage.setItem('offline_orders', JSON.stringify(orders));
+            completeOrder(order, true);
+        }
+
+        function completeOrder(order, offline = false) {
+            cart = [];
+            updateCartUI();
+            hideOrderForm();
+            document.getElementById('orderForm').reset();
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').textContent = 'Invia Ordine';
+            
+            const offlineMsg = offline ? '\n\n⚠️ Ordine salvato offline - Sarà inviato quando tornerà la connessione' : '';
+            alert('✅ Ordine inviato!\n\nID: ' + order.id + '\nTotale: €' + order.total.toFixed(2) + 
+                  '\n\nRiceverai conferma su WhatsApp!\n📞 389 648 7569' + offlineMsg);
+        }
+
+        function showNotification(msg) {
+            const n = document.createElement('div');
+            n.className = 'notification';
+            n.textContent = msg;
+            document.body.appendChild(n);
+            setTimeout(() => n.remove(), 2000);
+        }
+
+        // Click outside modal to close
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
